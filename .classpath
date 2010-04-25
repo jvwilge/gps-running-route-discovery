@@ -1,0 +1,19 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/scala"/>
+  <classpathentry kind="src" path="src/test/scala" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="con" path="ch.epfl.lamp.sdt.launching.SCALA_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-library/1.1/hamcrest-library-1.1.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-library/1.1/hamcrest-library-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jmock/jmock/2.4.0/jmock-2.4.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/Users/jeroen/.m2/repository/junit/junit/4.4/junit-4.4-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.8.0.Beta1-RC2/scala-library-2.8.0.Beta1-RC2.jar" sourcepath="M2_REPO/org/scala-lang/scala-library/2.8.0.Beta1-RC2/scala-library-2.8.0.Beta1-RC2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/scalacheck/scalacheck/1.2/scalacheck-1.2.jar" sourcepath="M2_REPO/org/scalacheck/scalacheck/1.2/scalacheck-1.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/scalatest/scalatest/0.9.1/scalatest-0.9.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/specs/specs/1.2.5/specs-1.2.5.jar" sourcepath="M2_REPO/org/specs/specs/1.2.5/specs-1.2.5-sources.jar"/>
+</classpath>

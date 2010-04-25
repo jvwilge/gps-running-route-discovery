@@ -1,0 +1,138 @@
+package net.jvw.bp;
+
+import java.io._
+import scala.io.Source
+import scala.collection.mutable._
+
+/**
+ * Inlezen csv en punten binnen radius vinden
+ * Bij veel rode punten (bv atletiekbaan is de radius 0.000125 (8.571 meter))
+ * dan is geel 0.0002 (13.714 meter)
+ */
+object Collect {
+
+
+def main(args: Array[String]) {
+	if (args.length<5) {
+		println("geef 5 argumenten mee, 1 is bronbestand, 2 is bestandsnaam voor de output, 3 is minPts, 4 is radius en 5 is radius van refPoint")
+		return
+	}
+
+	val inputFileName=args(0)
+	val outputFileName=args(1)
+	val fw=new FileWriter(outputFileName)
+	val minPts=args(2).toInt //minimum points within radius to be a core point
+	//val radius=0.000025
+	val radius=args(3).toDouble
+	val refRadius=args(4).toDouble
+
+	val start=System.nanoTime
+
+	fw.write ("routeId,id,x,y,inRadius,reachability\n")
+
+	val all=collectFromCsv(inputFileName)
+
+	println (all.length + " points found")
+	val refPoint=new GpsPoint("ref",0,5.151432,52.069355)
+	val filtered=all
+   .filter(_.isInRadius(refPoint, refRadius))
+//0.005 duurt 10.8 sec
+//0.01 duurt 267 sec. (met 119K/565K punten)
+//0.0012 is nodig om een goede analyse te kunnen doen
+//0.12 is Utrecht en omgeving
+ 
+ 
+	println (filtered.length + " points found after filter")
+
+
+	val points=new ArrayBuffer[(GpsPoint, Int)]
+
+	filtered.foreach { p:GpsPoint =>
+		val inRadius=filtered.filter(_.isInRadius(p, radius))
+		val sorted=inRadius.sortWith(_.distanceTo(p) < _.distanceTo(p))
+		
+		points+=((p, inRadius.length))
+	
+	/*
+		//TODO dit moet mooier kunnen
+		if (sorted.length>minPts){
+		//first element of sorted is always p, so skip it, but it's element 0 anyway
+		fw.write(p.getCsvString() + ", " + inRadius.length + ", " + sorted(minPts).distanceTo(p) + "\n")
+		} else {
+			fw.write(p.getCsvString() + ", " + inRadius.length + ", " + radius + "\n")
+		}
+		*/
+	}
+
+val yellowRadius=0.0002
+val redRadius=0.000125
+	val pathPoints=new ArrayBuffer[(GpsPoint, Int)]
+	
+	val sorted=points.sortWith(_._2 > _._2)
+	val (p, i)=sorted(0)
+	pathPoints+=sorted(0)
+	points.filter(_._1.isInRadius(p, redRadius)).foreach {
+		points-=_
+	}
+	println (points.length)
+	
+	for (it <- 1 to 5) {
+		println ("it: "  + it)
+		val previous=pathPoints.last._1
+		
+		val filtered2=points.filter(_._1.isInRadius(previous, yellowRadius))
+		val sorted2=filtered2.sortWith(_._2 > _._2)
+		val (p1, i1)=sorted2(0)
+	
+		points.filter(_._1.isInRadius(p1, redRadius)).foreach {
+			points-=_
+		}
+		points.filter(_._1.isInRadius(previous, yellowRadius)).foreach {
+			points-=_
+		}
+		pathPoints+=sorted2(0)
+		println (points.length)
+	}
+
+var x=0
+	pathPoints.foreach { t =>
+		val (p, i)=t
+		fw.write(p.getCsvString() + ", " + i + ", " + x + "\n")
+		x+=1
+	}
+	
+	//oude punten ook tekenen
+	points.foreach { t =>
+		val (p, i)=t
+		fw.write(p.getCsvString() + ", " + i + ", " + x + "\n")
+		x+=1
+	}
+	fw.close()
+	
+	val stop=System.nanoTime
+	println("time elapsed: " + (stop-start)/1000000  + "ms")
+}
+
+def writeOutputCsv(buf:ArrayBuffer[GpsPoint]){
+	
+}
+
+def collectFromCsv(fileLocation:String):ArrayBuffer[GpsPoint] = {
+	val source=Source.fromFile(new File(fileLocation))
+	val ab=new ArrayBuffer[GpsPoint]()
+	val lines=source.getLines
+	lines.foreach {
+	    line:String=>
+		if (!line.startsWith("routeId,id,")){
+			ab+=getPoint(line)
+		}
+	}
+	ab
+}
+
+def getPoint(line:String) = {
+	val l=line.split(", ")
+	new GpsPoint(l(0), l(1).toInt, l(2).toDouble, l(3).toDouble)
+}
+
+}
